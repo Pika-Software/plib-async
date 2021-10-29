@@ -52,8 +52,8 @@ end
 
 PLib:SharedLoad("plib/modules/async/libs")
 
-async(function()
-   local body, size, headers, code = await(http.AsyncFetch('https://google.com'))
+-- async(function()
+--    local body, size, headers, code = await(http.AsyncFetch('https://google.com'))
 
-   print('https://google.com returned ' .. code)
-end)
+--    print('https://google.com returned ' .. code)
+-- end)
