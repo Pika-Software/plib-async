@@ -1,8 +1,7 @@
 return {
-   Name = "Async",
-   DisableAutoload = true,
-   Init = function(PLib)
-      PLib:SH("plib/modules/async", "sh_core.lua")
-      PLib:Log(nil, "Module Loaded: ", PLib._C.module, "Async")
-   end
+   ["Name"] = "Async",
+   ["Version"] = 1.0,
+   ["Init"] = function(plib)
+      plib:SH("plib/modules/async", "sh_core.lua")
+   end,
 }
