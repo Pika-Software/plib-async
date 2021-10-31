@@ -3,6 +3,7 @@ PLib:SH("plib/modules/async", "sh_promise.lua")
 function await(p)
    assert(type(p) == "table" and p.MetaName == "Promise", "bad argument #1 (Promise expected)")
    assert(p:getStatus() != "invalid", "passed invalid Promise")
+   assert(coroutine.running() != nil, "await must be called within async function")
 
    if p:getStatus() != "pending" then
       if p:getStatus() == "fulfilled" then
@@ -42,18 +43,27 @@ function await(p)
    return unpack(args)
 end
 
-function async(func, ...)
+function async(func)
    assert(type(func) == "function", "bad argument #1 (function expected)")
 
-   local co = coroutine.create(func)
-   local ok, err = coroutine.resume(co, ...)
-   assert(ok, err)
+   return function(...)
+      local args = {...}
+
+      return Promise(function(res, rej)
+         local co = coroutine.create(function(...)
+            local args = {pcall(func, ...)}
+
+            if args[1] then
+               res(unpack(args, 2))
+            else
+               rej(args[2])
+            end
+         end)
+
+         local ok, err = coroutine.resume(co, unpack(args))
+         assert(ok, err)
+      end):catch()
+   end
 end
 
 PLib:SharedLoad("plib/modules/async/libs")
-
--- async(function()
---    local body, size, headers, code = await(http.AsyncFetch('https://google.com'))
-
---    print('https://google.com returned ' .. code)
--- end)
